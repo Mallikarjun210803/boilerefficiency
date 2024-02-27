@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boiler Efficiency, Blowdown & HCV Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #result {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Boiler Efficiency, Blowdown & HCV Calculator</h1>
+    <label for="calculationType">Select Calculation Type:</label>
+    <select id="calculationType" onchange="toggleForms()">
+      <option value="">Select</option>
+      <option value="efficiency">Boiler Efficiency</option>
+      <option value="blowdown">Blowdown Percentage</option>
+      <option value="hcv">Higher Calorific Value (HCV)</option>
+    </select>
+
+    <div id="efficiencyForm" class="hidden">
+      <h2>Boiler Efficiency</h2>
+      <form id="boilerForm">
+        <label for="steam">Quantity of Steam Generated (kg/hr):</label>
+        <input type="number" id="steam" required>
+        <label for="enthalpySteam">Enthalpy of Steam (kcal/kg):</label>
+        <input type="number" id="enthalpySteam" required>
+        <label for="enthalpyFeedWater">Enthalpy of Feed Water (kcal/kg):</label>
+        <input type="number" id="enthalpyFeedWater" required>
+        <label for="fuel">Quantity of Fuel Used (kg/hr):</label>
+        <input type="number" id="fuel" required>
+        <label for="gcv">Gross Calorific Value of Fuel (kcal/kg):</label>
+        <input type="number" id="gcv" required>
+        <button type="button" onclick="calculateEfficiency()">Calculate Efficiency</button>
+      </form>
+    </div>
+
+    <div id="blowdownForm" class="hidden">
+      <h2>Blowdown Percentage</h2>
+      <form id="blowdownCalculationForm">
+        <label for="feedWaterTDS">Feed Water TDS (ppm):</label>
+        <input type="number" id="feedWaterTDS" required>
+        <label for="makeupWater">Makeup Water (%):</label>
+        <input type="number" id="makeupWater" required>
+        <label for="permissibleTDS">Maximum Permissible TDS in Boiler Water (ppm):</label>
+        <input type="number" id="permissibleTDS" required>
+        <button type="button" onclick="calculateBlowdown()">Calculate Blowdown</button>
+      </form>
+    </div>
+
+    <div id="hcvForm" class="hidden">
+      <h2>Higher Calorific Value (HCV)</h2>
+      <form id="hcvCalculationForm">
+        <label for="carbonPercentage">Carbon Percentage (%):</label>
+        <input type="number" id="carbonPercentage" required>
+        <label for="hydrogenPercentage">Hydrogen Percentage (%):</label>
+        <input type="number" id="hydrogenPercentage" required>
+        <label for="oxygenPercentage">Oxygen Percentage (%):</label>
+        <input type="number" id="oxygenPercentage" required>
+        <label for="sulfurPercentage">Sulfur Percentage (%):</label>
+        <input type="number" id="sulfurPercentage" required>
+        <button type="button" onclick="calculateHCV()">Calculate HCV</button>
+      </form>
+    </div>
+
+    <div id="result"></div>
+  </div>
+
+  <footer>
+    Designed and Maintained by Programmers Hub, Belagavi, Karnataka, India<br>
+    Website: <a href="https://programmershub.in">programmershub.in</a>
+  </footer>
+
+  <script>
+    function toggleForms() {
+      var selectedOption = document.getElementById('calculationType').value;
+      var efficiencyForm = document.getElementById('efficiencyForm');
+      var blowdownForm = document.getElementById('blowdownForm');
+      var hcvForm = document.getElementById('hcvForm');
+
+      if (selectedOption === 'efficiency') {
+        efficiencyForm.classList.remove('hidden');
+        blowdownForm.classList.add('hidden');
+        hcvForm.classList.add('hidden');
+      } else if (selectedOption === 'blowdown') {
+        efficiencyForm.classList.add('hidden');
+        blowdownForm.classList.remove('hidden');
+        hcvForm.classList.add('hidden');
+      } else if (selectedOption === 'hcv') {
+        efficiencyForm.classList.add('hidden');
+        blowdownForm.classList.add('hidden');
+        hcvForm.classList.remove('hidden');
+      } else {
+        efficiencyForm.classList.add('hidden');
+        blowdownForm.classList.add('hidden');
+        hcvForm.classList.add('hidden');
+      }
+    }
+
+    function calculateEfficiency() {
+      var steam = parseFloat(document.getElementById('steam').value);
+      var enthalpySteam = parseFloat(document.getElementById('enthalpySteam').value);
+      var enthalpyFeedWater = parseFloat(document.getElementById('enthalpyFeedWater').value);
+      var fuel = parseFloat(document.getElementById('fuel').value);
+      var gcv = parseFloat(document.getElementById('gcv').value);
+
+      var efficiency = (steam * (enthalpySteam - enthalpyFeedWater)) / (fuel * gcv) * 100;
+      document.getElementById('result').innerText = "Boiler Efficiency: " + efficiency.toFixed(2) + "%";
+    }
+
+    function calculateBlowdown() {
+      var feedWaterTDS = parseFloat(document.getElementById('feedWaterTDS').value);
+      var makeupWater = parseFloat(document.getElementById('makeupWater').value);
+      var permissibleTDS = parseFloat(document.getElementById('permissibleTDS').value);
+
+      var blowdownPercentage = (feedWaterTDS * (makeupWater / 100)) / permissibleTDS * 100;
+      document.getElementById('result').innerText = "Blowdown Percentage: " + blowdownPercentage.toFixed(2) + "%";
+    }
+
+    function calculateHCV() {
+      var carbonPercentage = parseFloat(document.getElementById('carbonPercentage').value);
+      var hydrogenPercentage = parseFloat(document.getElementById('hydrogenPercentage').value);
+      var oxygenPercentage = parseFloat(document.getElementById('oxygenPercentage').value);
+      var sulfurPercentage = parseFloat(document.getElementById('sulfurPercentage').value);
+
+      var HCV = (1/100) * (8080 * carbonPercentage + 34500 * (hydrogenPercentage - (oxygenPercentage/8)) + 2240 * sulfurPercentage);
+      document.getElementById('result').innerText = "Higher Calorific Value (HCV): " + HCV.toFixed(2) + " Kcal/kg";
+    }
+  </script>
+</body>
+</html>
